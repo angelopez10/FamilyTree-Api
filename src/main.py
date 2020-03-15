@@ -8,7 +8,9 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from models import db
-#from models import Person
+from models import Family
+
+myFamily = Family ("Doe")
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -28,16 +30,40 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+@app.route('/member', methods=['GET', 'POST'])
+def person_group():
 
-    response_body = {
-        "hello": "world"
-    }
+    if request.method == 'GET':
+        respuesta_body = {
+            "members": myFamily.get_all_members(),
+            "family_name": myFamily.last_name,
+            "lucky_numbers": [],
+            "sum_of_lucky": 1
+        }
 
-    return jsonify(response_body), 200
+        return jsonify(respuesta_body), 200
 
-# this only runs if `$ python src/main.py` is executed
+
+    if request.method == 'POST':
+        body = request.get_json()
+        respuesta = myFamily.add_member(body)
+        return jsonify(respuesta), 200
+
+@app.route('/member/<int:member_id>', methods=['DELETE', 'PUT'])
+def person():
+    if request.method == 'DELETE':
+        respuesta = myFamily.delete_member(member_id)
+
+        return jsonify(respuesta), 200
+
+    if request.method == 'PUT':
+        respuesta = myFamily.add_member(member_id)
+        return jsonify(respuesta), 200
+
+
+
+
+# this only runs if `$ python src/main.py` is exercuted
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)

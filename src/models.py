@@ -1,17 +1,39 @@
 from flask_sqlalchemy import SQLAlchemy
+from random import randint
 
 db = SQLAlchemy()
 
-# class Person(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(80), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
+class Family:
+    def __init__(self, last_name):
+        self.last_name = last_name
 
-#     def __repr__(self):
-#         return '<Person %r>' % self.username
+        self._members = [{
+            "id": 1,
+            "first_name": "John",
+            "age": "25",
+            "lucky_numbers": "1, 32"
+        }]
 
-#     def serialize(self):
-#         return {
-#             "username": self.username,
-#             "email": self.email
-#         }
+    def _generateId(self):
+        return randint(0, 99999999)
+
+    def add_member(self, member):
+        member ["id"] = self._generateId()
+        self._members.append(member)
+        return self._members
+
+    def delete_member(self, id):
+        self._members = list(filter(lambda member: member['id']!=id,self._members))
+        return self._members
+
+    def update_member(self, id, member):
+        self._members = list(filter(lambda member: member['id']!=id,self._members))
+        return None
+
+    def get_member(self, id):
+        member= next(filter(lambda member: member['id']==id,self._members),None)
+        return member
+
+  
+    def get_all_members(self):
+        return self._members
